@@ -1,0 +1,29 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_15.0.app
+      
+    - name: Install CocoaPods
+      run: |
+        cd ios
+        pod install
+        
+    - name: Build
+      run: |
+        cd ios
+        xcodebuild build -workspace CommunityCapital.xcworkspace \
+          -scheme CommunityCapital \
+          -destination 'platform=iOS Simulator,name=iPhone 15'

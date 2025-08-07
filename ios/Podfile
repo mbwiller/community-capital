@@ -1,0 +1,29 @@
+platform :ios, '16.0'
+use_frameworks!
+
+target 'CommunityCapital' do
+  # Payments
+  pod 'Stripe'
+  pod 'Plaid'
+  
+  # Firebase
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Analytics'
+  
+  # UI/UX
+  pod 'Lottie'
+  pod 'SnapKit'
+  
+  # Networking
+  pod 'Alamofire'
+  
+  # Analytics
+  pod 'Mixpanel-swift'
+  
+  target 'CommunityCapitalTests' do
+    inherit! :search_paths
+    pod 'Quick'
+    pod 'Nimble'
+  end
+end
