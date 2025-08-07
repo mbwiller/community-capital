@@ -1,3 +1,11 @@
+//
+//  CommunityCapitalApp.swift
+//  CommunityCapital
+//
+//  Created by Matt on 8/7/25.
+//
+
+
 // CommunityCapitalApp.swift
 import SwiftUI
 import ComposableArchitecture

@@ -1,3 +1,10 @@
+//
+//  NetworkManager.swift
+//  CommunityCapital
+//
+//  Created by Matt on 8/7/25.
+//
+
 // NetworkManager.swift
 import Foundation
 import Combine
@@ -214,7 +221,7 @@ final class NetworkManager: ObservableObject {
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("iOS/\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")", 
+        request.setValue("iOS/\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")",
                         forHTTPHeaderField: "User-Agent")
         
         // Add body if needed
