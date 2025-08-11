@@ -1,8 +1,8 @@
-# 🏦 Community Capital Platform
+# Community Capital Platform
 
 A comprehensive financial platform with iOS app and backend API for community-driven capital management.
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 community-capital/
@@ -15,7 +15,7 @@ community-capital/
 └── .github/              # GitHub workflows
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Backend Setup
 ```bash
@@ -34,7 +34,7 @@ open CommunityCapital.xcworkspace
 ```
 Then build and run in Xcode (Cmd + R)
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### iOS
 - Swift/SwiftUI
@@ -49,7 +49,7 @@ Then build and run in Xcode (Cmd + R)
 - Socket.io for real-time features
 - JWT authentication
 
-## 📝 Development Notes
+## Development Notes
 
 ### Key Commands
 
@@ -70,7 +70,7 @@ Backend requires `.env` file with:
 - JWT secrets
 - Redis configuration
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### iOS Build Issues
 If you encounter missing Pod files:
@@ -87,19 +87,19 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
-## 📚 Documentation
+## Documentation
 
 - [iOS Setup Guide](./ios/README.md)
 - [Backend API Docs](./backend/README.md)
 
-## 🤝 Contributing
+## Contributing
 
 1. Create feature branch
 2. Make changes
 3. Test thoroughly
 4. Submit pull request
 
-## 📄 License
+## License
 
 Proprietary - All rights reserved
 
