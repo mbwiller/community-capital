@@ -1,10 +1,4 @@
-//
-//  HomeView.swift
-//  CommunityCapital
-//
-//  Created by Matt on 8/7/25.
-//
-
+// HomeView.swift
 import SwiftUI
 import ComposableArchitecture
 
@@ -13,81 +7,38 @@ struct HomeView: View {
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
-            NavigationView {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Header
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Welcome back!")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(CCDesign.textSecondary)
-                                
-                                Text("Let's split something")
-                                    .font(.system(size: 26, weight: .bold))
-                                    .foregroundColor(CCDesign.textPrimary)
-                            }
-                            Spacer()
-                        }
-                        .padding(.top, 20)
-                        
-                        // Quick Actions
-                        HStack(spacing: 12) {
-                            QuickActionCard(
-                                icon: "camera.fill",
-                                title: "Scan Receipt",
-                                subtitle: "Quick split"
-                            ) {
-                                viewStore.send(.startScanTapped)
-                            }
-                            
-                            QuickActionCard(
-                                icon: "qrcode",
-                                title: "Join Event",
-                                subtitle: "Enter code"
-                            ) {
-                                viewStore.send(.joinEventTapped)
-                            }
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Welcome Card
+                    WelcomeCard(userName: "User")
+                    
+                    // Quick Actions
+                    HStack(spacing: 16) {
+                        QuickActionButton(
+                            title: "Start Split",
+                            icon: "camera.fill",
+                            color: .green
+                        ) {
+                            viewStore.send(.startScanTapped)
                         }
                         
-                        // Recent Activity
-                        if !viewStore.recentActivity.isEmpty {
-                            VStack(alignment: .leading, spacing: 16) {
-                                Text("Recent Activity")
-                                    .font(.system(size: 20, weight: .semibold))
-                                    .foregroundColor(CCDesign.textPrimary)
-                                
-                                ForEach(viewStore.recentActivity) { event in
-                                    EventCard(event: event)
-                                }
-                            }
+                        QuickActionButton(
+                            title: "Join Event",
+                            icon: "person.badge.plus.fill",
+                            color: .blue
+                        ) {
+                            viewStore.send(.joinEventTapped)
                         }
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 100)
+                    .padding(.horizontal)
+                    
+                    // Recent Activity
+                    if !viewStore.recentActivity.isEmpty {
+                        RecentActivitySection(events: viewStore.recentActivity)
+                    }
                 }
-                .navigationBarHidden(true)
             }
-            .sheet(
-                store: self.store.scope(
-                    state: \.$destination,
-                    action: { .destination($0) }
-                ),
-                state: /HomeReducer.Destination.State.scanner,
-                action: HomeReducer.Destination.Action.scanner
-            ) { scannerStore in
-                ReceiptScannerView(store: scannerStore)
-            }
-            .sheet(
-                store: self.store.scope(
-                    state: \.$destination,
-                    action: { .destination($0) }
-                ),
-                state: /HomeReducer.Destination.State.joinEvent,
-                action: HomeReducer.Destination.Action.joinEvent
-            ) { joinStore in
-                JoinEventView(store: joinStore)
-            }
+            .navigationTitle("Community Capital")
             .onAppear {
                 viewStore.send(.loadRecentActivity)
             }
@@ -95,64 +46,94 @@ struct HomeView: View {
     }
 }
 
-struct QuickActionCard: View {
-    let icon: String
+struct WelcomeCard: View {
+    let userName: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Welcome back, \(userName)!")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Ready to split your next bill?")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(
+            LinearGradient(
+                colors: [Color.green.opacity(0.3), Color.blue.opacity(0.2)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(16)
+        .padding(.horizontal)
+    }
+}
+
+struct QuickActionButton: View {
     let title: String
-    let subtitle: String
+    let icon: String
+    let color: Color
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(spacing: 12) {
                 Image(systemName: icon)
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
+                    .font(.title2)
+                    .foregroundColor(color)
                 
-                Spacer()
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
-                    
-                    Text(subtitle)
-                        .font(.system(size: 12))
-                        .foregroundColor(.white.opacity(0.8))
-                }
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.primary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(height: 120)
-            .padding(16)
-            .background(CCDesign.primaryGradient)
-            .cornerRadius(20)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(12)
         }
     }
 }
 
-struct EventCard: View {
-    let event: BillEvent
+struct RecentActivitySection: View {
+    let events: [BillEvent]
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(event.eventName)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(CCDesign.textPrimary)
-                
-                Text(event.restaurantName)
-                    .font(.system(size: 14))
-                    .foregroundColor(CCDesign.textSecondary)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Recent Activity")
+                .font(.headline)
+                .padding(.horizontal)
+            
+            ForEach(events.prefix(5)) { event in
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(event.eventName)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        
+                        Text(event.createdAt, style: .date)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Text("$\(event.totalAmount, specifier: "%.2f")")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                .padding()
+                .background(Color.gray.opacity(0.05))
+                .cornerRadius(10)
+                .padding(.horizontal)
             }
-            
-            Spacer()
-            
-            Text(String(format: "$%.2f", event.totalAmount))
-                .font(.system(size: 18, weight: .semibold, design: .rounded))
-                .foregroundColor(CCDesign.textPrimary)
         }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(color: CCDesign.cardShadow, radius: 4, x: 0, y: 2)
     }
 }

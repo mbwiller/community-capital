@@ -1,69 +1,107 @@
-# 💸 Community Capital
+# 🏦 Community Capital Platform
 
-> Split bills instantly. Invest together. Build wealth with friends.
+A comprehensive financial platform with iOS app and backend API for community-driven capital management.
 
-## 🚀 Vision
+## 📂 Project Structure
 
-Community Capital transforms how groups handle money together - from splitting tonight's dinner to building tomorrow's wealth.
+```
+community-capital/
+├── ios/                    # Native iOS Application
+│   ├── CommunityCapital/   # Swift/SwiftUI source code
+│   └── Podfile            # iOS dependencies
+├── backend/               # Node.js Backend API
+│   ├── src/              # API source code
+│   └── package.json      # Node dependencies
+└── .github/              # GitHub workflows
+```
 
-## ✨ Core Features
-
-### Phase 1: Payment Splitting (MVP)
-- 📸 **Smart Receipt Scanning** - AI-powered OCR instantly itemizes bills
-- 👥 **Real-time Splitting** - Each person claims their items
-- 💳 **Virtual Card Magic** - One card payment, multiple simultaneous charges
-- 🔐 **Face ID Security** - Biometric confirmation for all transactions
-
-### Phase 2: Collective Investing (Coming Soon)
-- 📈 **Group Portfolios** - Pool money for fractional investing
-- 🗳️ **Democratic Decisions** - Vote on investment choices
-- 🤖 **AI Advisor** - Get personalized group investment insights
-- 📊 **Social Finance** - Learn and grow wealth together
-
-## 🏗️ Architecture
-
-\\\
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   iOS App   │────▶│   Backend    │────▶│   Railway   │
-│  (SwiftUI)  │     │  (Node.js)   │     │   (Cloud)   │
-└─────────────┘     └──────────────┘     └─────────────┘
-       │                    │                     │
-       ▼                    ▼                     ▼
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│    Plaid    │     │    Stripe    │     │  Database   │
-│   (Banks)   │     │  (Payments)  │     │ (PostgreSQL)│
-└─────────────┘     └──────────────┘     └─────────────┘
-\\\
-
-## 🚦 Quick Start
-
-### Prerequisites
-- Xcode 15+ (for iOS development)
-- Node.js 18+ (for backend)
-- PostgreSQL 14+ (for database)
+## 🚀 Quick Start
 
 ### Backend Setup
-\\\ash
+```bash
 cd backend
 npm install
-copy .env.example .env
-# Add your API keys to .env
+cp .env.example .env
+# Edit .env with your credentials
 npm run dev
-\\\
+```
 
 ### iOS Setup
-\\\ash
+```bash
 cd ios
-pod install
+pod install --repo-update
 open CommunityCapital.xcworkspace
-# Update Config.swift with your backend URL
-# Run on simulator or device
-\\\
+```
+Then build and run in Xcode (Cmd + R)
+
+## 🛠 Tech Stack
+
+### iOS
+- Swift/SwiftUI
+- Firebase (Auth & Firestore)
+- Stripe & Plaid SDKs
+- CocoaPods for dependency management
+
+### Backend
+- Node.js & Express
+- PostgreSQL with Knex.js
+- Redis for caching
+- Socket.io for real-time features
+- JWT authentication
+
+## 📝 Development Notes
+
+### Key Commands
+
+**Backend:**
+- `npm run dev` - Start development server
+- `npm test` - Run tests
+- `npm run lint` - Check code style
+
+**iOS:**
+- Always open `.xcworkspace`, not `.xcodeproj`
+- Clean build: Cmd + Shift + K
+- Run: Cmd + R
+
+### Environment Variables
+Backend requires `.env` file with:
+- Database credentials
+- API keys for Stripe, Plaid, Twilio
+- JWT secrets
+- Redis configuration
+
+## 🔧 Troubleshooting
+
+### iOS Build Issues
+If you encounter missing Pod files:
+```bash
+cd ios
+rm -rf Pods Podfile.lock
+pod install --repo-update
+```
+
+### Backend Issues
+```bash
+cd backend
+rm -rf node_modules package-lock.json
+npm install
+```
+
+## 📚 Documentation
+
+- [iOS Setup Guide](./ios/README.md)
+- [Backend API Docs](./backend/README.md)
+
+## 🤝 Contributing
+
+1. Create feature branch
+2. Make changes
+3. Test thoroughly
+4. Submit pull request
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file
+Proprietary - All rights reserved
 
-## 🙏 Acknowledgments
-
-Built with ❤️ by the Community Capital team
+---
+Last Updated: August 9, 2025

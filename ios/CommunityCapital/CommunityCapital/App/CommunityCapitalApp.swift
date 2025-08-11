@@ -1,17 +1,17 @@
-//
-//  CommunityCapitalApp.swift
-//  CommunityCapital
-//
-//  Created by Matt on 8/7/25.
-//
-
-
 // CommunityCapitalApp.swift
 import SwiftUI
 import ComposableArchitecture
+import Vision
+import UIKit
+import Firebase
 
 @main
 struct CommunityCapitalApp: App {
+    init() {
+        // Initialize Firebase
+        FirebaseApp.configure()
+    }
+    
     let store = Store(initialState: AppReducer.State()) {
         AppReducer()
             ._printChanges()
@@ -33,6 +33,7 @@ struct AppReducer: Reducer {
         var isLoading = true
     }
     
+    @CasePathable
     enum Action: Equatable {
         case authentication(AuthenticationReducer.Action)
         case main(MainReducer.Action)
@@ -42,11 +43,11 @@ struct AppReducer: Reducer {
     }
     
     var body: some ReducerOf<Self> {
-        Scope(state: \.authentication, action: /Action.authentication) {
+        Scope(state: \.authentication, action: \.authentication) {
             AuthenticationReducer()
         }
         
-        Scope(state: \.main, action: /Action.main) {
+        Scope(state: \.main, action: \.main) {
             MainReducer()
         }
         
@@ -96,14 +97,14 @@ struct AppView: View {
                     MainView(
                         store: store.scope(
                             state: \.main,
-                            action: AppReducer.Action.main
+                            action: \.main
                         )
                     )
                 } else {
                     AuthenticationView(
                         store: store.scope(
                             state: \.authentication,
-                            action: AppReducer.Action.authentication
+                            action: \.authentication
                         )
                     )
                 }
@@ -128,6 +129,7 @@ struct MainReducer: Reducer {
         var activeEvent: BillEvent?
     }
     
+    @CasePathable
     enum Action: Equatable {
         case home(HomeReducer.Action)
         case events(EventsReducer.Action)
@@ -139,15 +141,15 @@ struct MainReducer: Reducer {
     }
     
     var body: some ReducerOf<Self> {
-        Scope(state: \.home, action: /Action.home) {
+        Scope(state: \.home, action: \.home) {
             HomeReducer()
         }
         
-        Scope(state: \.events, action: /Action.events) {
+        Scope(state: \.events, action: \.events) {
             EventsReducer()
         }
         
-        Scope(state: \.profile, action: /Action.profile) {
+        Scope(state: \.profile, action: \.profile) {
             ProfileReducer()
         }
         
@@ -192,7 +194,7 @@ struct MainView: View {
                 HomeView(
                     store: store.scope(
                         state: \.home,
-                        action: MainReducer.Action.home
+                        action: \.home
                     )
                 )
                 .tabItem {
@@ -203,7 +205,7 @@ struct MainView: View {
                 EventsView(
                     store: store.scope(
                         state: \.events,
-                        action: MainReducer.Action.events
+                        action: \.events
                     )
                 )
                 .tabItem {
@@ -214,7 +216,7 @@ struct MainView: View {
                 ProfileView(
                     store: store.scope(
                         state: \.profile,
-                        action: MainReducer.Action.profile
+                        action: \.profile
                     )
                 )
                 .tabItem {
@@ -238,6 +240,7 @@ struct HomeReducer: Reducer {
         @PresentationState var destination: Destination.State?
     }
     
+    @CasePathable
     enum Action: Equatable {
         case startScanTapped
         case joinEventTapped
@@ -249,22 +252,24 @@ struct HomeReducer: Reducer {
         case destination(PresentationAction<Destination.Action>)
     }
     
-    enum Destination: Reducer {
+    struct Destination: Reducer {
+        @CasePathable
         enum State: Equatable {
             case scanner(ReceiptScannerReducer.State)
             case joinEvent(JoinEventReducer.State)
         }
         
+        @CasePathable
         enum Action: Equatable {
             case scanner(ReceiptScannerReducer.Action)
             case joinEvent(JoinEventReducer.Action)
         }
         
         var body: some ReducerOf<Self> {
-            Scope(state: /State.scanner, action: /Action.scanner) {
+            Scope(state: \.scanner, action: \.scanner) {
                 ReceiptScannerReducer()
             }
-            Scope(state: /State.joinEvent, action: /Action.joinEvent) {
+            Scope(state: \.joinEvent, action: \.joinEvent) {
                 JoinEventReducer()
             }
         }
@@ -295,7 +300,7 @@ struct HomeReducer: Reducer {
                 return .none
             }
         }
-        .ifLet(\.$destination, action: /Action.destination) {
+        .ifLet(\.$destination, action: \.destination) {
             Destination()
         }
     }
@@ -311,6 +316,10 @@ struct ReceiptScannerReducer: Reducer {
         var restaurantName = ""
         var errorMessage: String?
         var confidenceScore: Double = 0.0
+        
+        var selectedItemsTotal: Double {
+            parsedItems.filter { $0.isSelected }.reduce(0) { $0 + $1.price * Double($1.quantity) }
+        }
     }
     
     enum Action: Equatable {
@@ -320,6 +329,8 @@ struct ReceiptScannerReducer: Reducer {
         case setEventName(String)
         case setRestaurantName(String)
         case itemEdited(id: String, BillItem)
+        case toggleItemSelection(Int)
+        case manualItemsAdded([BillItem])
         case createEvent
         case eventCreated(Result<BillEvent, APIError>)
         case dismissError
@@ -341,11 +352,14 @@ struct ReceiptScannerReducer: Reducer {
                 state.isProcessing = true
                 
                 return .run { send in
-                    await send(.receiptProcessed(
-                        Result {
-                            try await receiptParser.parse(image)
-                        }
-                    ))
+                    do {
+                        let result = try await receiptParser.parse(image)
+                        await send(.receiptProcessed(.success(result)))
+                    } catch let error as ReceiptError {
+                        await send(.receiptProcessed(.failure(error)))
+                    } catch {
+                        await send(.receiptProcessed(.failure(.parsingFailed)))
+                    }
                 }
                 
             case let .receiptProcessed(.success(parsed)):
@@ -355,7 +369,7 @@ struct ReceiptScannerReducer: Reducer {
                 state.confidenceScore = parsed.confidence
                 
                 // Track successful scan
-                analytics.track("receipt_scanned", properties: [
+                analytics.track("receipt_scanned", [
                     "item_count": parsed.items.count,
                     "confidence": parsed.confidence
                 ])
@@ -367,32 +381,74 @@ struct ReceiptScannerReducer: Reducer {
                 state.errorMessage = error.localizedDescription
                 return .none
                 
+            case let .setEventName(name):
+                state.eventName = name
+                return .none
+                
+            case let .setRestaurantName(name):
+                state.restaurantName = name
+                return .none
+                
+            case let .itemEdited(id, updatedItem):
+                if let index = state.parsedItems.firstIndex(where: { $0.id == id }) {
+                    state.parsedItems[index] = updatedItem
+                }
+                return .none
+                
+            case let .toggleItemSelection(index):
+                guard index < state.parsedItems.count else { return .none }
+                state.parsedItems[index].isSelected.toggle()
+                return .none
+                
+            case let .manualItemsAdded(items):
+                state.parsedItems = items
+                state.isProcessing = false
+                return .none
+                
             case .createEvent:
-                let items = state.parsedItems
-                let eventName = state.eventName
-                let restaurantName = state.restaurantName
+                guard !state.eventName.isEmpty && state.selectedItemsTotal > 0 else { return .none }
+                
+                let selectedItems = state.parsedItems.filter { $0.isSelected }
+                let event = BillEvent(
+                    id: UUID().uuidString,
+                    creatorId: "current_user_id",
+                    eventName: state.eventName,
+                    restaurantName: state.restaurantName,
+                    totalAmount: state.selectedItemsTotal,
+                    tax: 0,
+                    tipPercentage: 18,
+                    receiptImageURL: nil,
+                    items: selectedItems,
+                    participants: [],
+                    status: .draft,
+                    createdAt: Date(),
+                    virtualCardId: nil
+                )
                 
                 return .run { send in
-                    await send(.eventCreated(
-                        Result {
-                            try await apiClient.createEvent(
-                                name: eventName,
-                                restaurant: restaurantName,
-                                items: items
-                            )
-                        }
-                    ))
+                    do {
+                        let createdEvent = try await apiClient.createEventFromBillEvent(event)
+                        await send(.eventCreated(.success(createdEvent)))
+                    } catch {
+                        await send(.eventCreated(.failure(error as? APIError ?? .serverError(error.localizedDescription))))
+                    }
                 }
                 
             case let .eventCreated(.success(event)):
-                // Success handled by parent
+                // Event created successfully, could navigate to event details
+                analytics.track("event_created", [
+                    "event_id": event.id,
+                    "item_count": event.items.count,
+                    "total_amount": event.totalAmount
+                ])
                 return .none
                 
             case let .eventCreated(.failure(error)):
                 state.errorMessage = error.localizedDescription
                 return .none
                 
-            default:
+            case .dismissError:
+                state.errorMessage = nil
                 return .none
             }
         }
@@ -437,7 +493,7 @@ struct EnhancedReceiptParser {
     
     private func parseItemsWithConfidence(from lines: [String]) -> [BillItem] {
         var items: [BillItem] = []
-        let pricePattern = #"\\$?(\d+\.\d{2})"#
+        let pricePattern = #"\$?(\d+\.\d{2})"#
         let priceRegex = try! NSRegularExpression(pattern: pricePattern)
         
         for line in lines {
@@ -457,7 +513,8 @@ struct EnhancedReceiptParser {
                         price: price,
                         quantity: 1,
                         claimedBy: [],
-                        isSharedByTable: false
+                        isSharedByTable: false,
+                        isSelected: true
                     ))
                 }
             }
@@ -486,8 +543,22 @@ struct EnhancedReceiptParser {
         return min(score, 1.0)
     }
     
+    private func extractMerchantName(from lines: [String]) -> String? {
+        guard !lines.isEmpty else { return nil }
+        
+        for line in lines.prefix(5) {
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !trimmed.isEmpty &&
+                !trimmed.contains(where: { $0.isNumber }) &&
+                trimmed.count > 3 {
+                return trimmed
+            }
+        }
+        
+        return nil
+    }
+    
     private func storeTrainingData(image: UIImage, items: [BillItem], confidence: Double) async {
-        // Store for future ML training
         let trainingData = TrainingData(
             imageData: image.jpegData(compressionQuality: 0.8),
             items: items,
@@ -499,7 +570,7 @@ struct EnhancedReceiptParser {
     }
 }
 
-// MARK: - Models
+// MARK: - Models with Equatable Conformance
 struct User: Identifiable, Codable, Equatable {
     let id: String
     var name: String
@@ -511,7 +582,7 @@ struct User: Identifiable, Codable, Equatable {
 }
 
 struct BillEvent: Identifiable, Codable, Equatable {
-    let id: String
+    var id: String
     var creatorId: String
     var eventName: String
     var restaurantName: String
@@ -525,7 +596,7 @@ struct BillEvent: Identifiable, Codable, Equatable {
     var createdAt: Date
     var virtualCardId: String?
     
-    enum EventStatus: String, Codable {
+    enum EventStatus: String, Codable, Equatable {
         case draft, awaitingParticipants, itemsClaimed, paymentPending, completed, failed
     }
 }
@@ -537,6 +608,7 @@ struct BillItem: Identifiable, Codable, Equatable {
     var quantity: Int
     var claimedBy: [String]
     var isSharedByTable: Bool
+    var isSelected: Bool = false
     
     var pricePerPerson: Double {
         guard !claimedBy.isEmpty else { return price }
@@ -555,7 +627,7 @@ struct EventParticipant: Identifiable, Codable, Equatable {
     var paymentStatus: PaymentStatus
     var paymentIntentId: String?
     
-    enum PaymentStatus: String, Codable {
+    enum PaymentStatus: String, Codable, Equatable {
         case pending, processing, completed, failed
     }
 }
@@ -579,7 +651,7 @@ struct TrainingData: Codable {
     let timestamp: Date
 }
 
-enum ReceiptError: Error, LocalizedError {
+enum ReceiptError: Error, LocalizedError, Equatable {
     case invalidImage
     case parsingFailed
     case lowConfidence
@@ -593,16 +665,32 @@ enum ReceiptError: Error, LocalizedError {
     }
 }
 
-enum APIError: Error, LocalizedError {
+enum APIError: Error, LocalizedError, Equatable {
     case networkError
     case invalidResponse
     case serverError(String)
+    case notFound
+    case unauthorized
     
     var errorDescription: String? {
         switch self {
         case .networkError: return "Network connection error"
         case .invalidResponse: return "Invalid server response"
         case .serverError(let message): return message
+        case .notFound: return "Resource not found"
+        case .unauthorized: return "Unauthorized"
         }
+    }
+}
+
+// MARK: - WebSocket Client (placeholder)
+final class WebSocketClient {
+    static let shared = WebSocketClient()
+    
+    private init() {}
+    
+    func connect() async {
+        // In production, this would establish WebSocket connection
+        print("🔌 WebSocket connected")
     }
 }

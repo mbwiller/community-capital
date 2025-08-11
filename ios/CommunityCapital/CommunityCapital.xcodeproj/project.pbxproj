@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C9A47C972E44A6C900297B0C /* Stripe in Frameworks */ = {isa = PBXBuildFile; productRef = C9A47C962E44A6C900297B0C /* Stripe */; };
-		C9A47C992E44A6C900297B0C /* StripePaymentSheet in Frameworks */ = {isa = PBXBuildFile; productRef = C9A47C982E44A6C900297B0C /* StripePaymentSheet */; };
+		328B121DCE398DA648017064 /* Pods_CommunityCapitalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE6C0984803E8201202F22E5 /* Pods_CommunityCapitalTests.framework */; };
 		C9A47C9C2E44A6F000297B0C /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = C9A47C9B2E44A6F000297B0C /* ComposableArchitecture */; };
+		F2DB16BE9C0477F7A1142BF5 /* Pods_CommunityCapital.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0225962D9C55D6A1C56DFC72 /* Pods_CommunityCapital.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,33 +30,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0225962D9C55D6A1C56DFC72 /* Pods_CommunityCapital.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CommunityCapital.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		25BEA8C215AB7C6957C6A85E /* Pods-CommunityCapital.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommunityCapital.release.xcconfig"; path = "Target Support Files/Pods-CommunityCapital/Pods-CommunityCapital.release.xcconfig"; sourceTree = "<group>"; };
+		4670EA1AA0A29EFBAC2D48A9 /* Pods-CommunityCapital.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommunityCapital.debug.xcconfig"; path = "Target Support Files/Pods-CommunityCapital/Pods-CommunityCapital.debug.xcconfig"; sourceTree = "<group>"; };
+		AE6C0984803E8201202F22E5 /* Pods_CommunityCapitalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CommunityCapitalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A47C692E44A3E200297B0C /* CommunityCapital.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CommunityCapital.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A47C762E44A3E800297B0C /* CommunityCapitalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CommunityCapitalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A47C802E44A3E800297B0C /* CommunityCapitalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CommunityCapitalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC467E445EC014EAF27A5227 /* Pods-CommunityCapitalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommunityCapitalTests.release.xcconfig"; path = "Target Support Files/Pods-CommunityCapitalTests/Pods-CommunityCapitalTests.release.xcconfig"; sourceTree = "<group>"; };
+		E759C45A898D585E7642FA08 /* Pods-CommunityCapitalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CommunityCapitalTests.debug.xcconfig"; path = "Target Support Files/Pods-CommunityCapitalTests/Pods-CommunityCapitalTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		C9A47D232E453AC300297B0C /* Exceptions for "CommunityCapital" folder in "CommunityCapital" target */ = {
+		C9E8661B2E4579720066CAFA /* Exceptions for "CommunityCapital" folder in "CommunityCapital" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Tests/CommunityCapitalTests.swift,
-				Tests/CommunityCapitalUITests.swift,
+				Resources/Info.plist,
 			);
 			target = C9A47C682E44A3E200297B0C /* CommunityCapital */;
-		};
-		C9A47D242E453AC300297B0C /* Exceptions for "CommunityCapital" folder in "CommunityCapitalTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Tests/CommunityCapitalTests.swift,
-			);
-			target = C9A47C752E44A3E800297B0C /* CommunityCapitalTests */;
-		};
-		C9A47D252E453ACD00297B0C /* Exceptions for "CommunityCapital" folder in "CommunityCapitalUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Tests/CommunityCapitalUITests.swift,
-			);
-			target = C9A47C7F2E44A3E800297B0C /* CommunityCapitalUITests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -64,9 +55,7 @@
 		C9A47C6B2E44A3E200297B0C /* CommunityCapital */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				C9A47D232E453AC300297B0C /* Exceptions for "CommunityCapital" folder in "CommunityCapital" target */,
-				C9A47D242E453AC300297B0C /* Exceptions for "CommunityCapital" folder in "CommunityCapitalTests" target */,
-				C9A47D252E453ACD00297B0C /* Exceptions for "CommunityCapital" folder in "CommunityCapitalUITests" target */,
+				C9E8661B2E4579720066CAFA /* Exceptions for "CommunityCapital" folder in "CommunityCapital" target */,
 			);
 			path = CommunityCapital;
 			sourceTree = "<group>";
@@ -78,9 +67,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9A47C992E44A6C900297B0C /* StripePaymentSheet in Frameworks */,
-				C9A47C972E44A6C900297B0C /* Stripe in Frameworks */,
 				C9A47C9C2E44A6F000297B0C /* ComposableArchitecture in Frameworks */,
+				F2DB16BE9C0477F7A1142BF5 /* Pods_CommunityCapital.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				328B121DCE398DA648017064 /* Pods_CommunityCapitalTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +95,8 @@
 			children = (
 				C9A47C6B2E44A3E200297B0C /* CommunityCapital */,
 				C9A47C6A2E44A3E200297B0C /* Products */,
+				E70BA960D86A17D9F9429D14 /* Pods */,
+				F4C1500AED994E437D177A57 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +110,27 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E70BA960D86A17D9F9429D14 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				4670EA1AA0A29EFBAC2D48A9 /* Pods-CommunityCapital.debug.xcconfig */,
+				25BEA8C215AB7C6957C6A85E /* Pods-CommunityCapital.release.xcconfig */,
+				E759C45A898D585E7642FA08 /* Pods-CommunityCapitalTests.debug.xcconfig */,
+				CC467E445EC014EAF27A5227 /* Pods-CommunityCapitalTests.release.xcconfig */,
+			);
+			name = Pods;
+			path = ../Pods;
+			sourceTree = "<group>";
+		};
+		F4C1500AED994E437D177A57 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0225962D9C55D6A1C56DFC72 /* Pods_CommunityCapital.framework */,
+				AE6C0984803E8201202F22E5 /* Pods_CommunityCapitalTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -126,9 +138,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9A47C8A2E44A3E800297B0C /* Build configuration list for PBXNativeTarget "CommunityCapital" */;
 			buildPhases = (
+				EA105A129BD00E343CF883DA /* [CP] Check Pods Manifest.lock */,
 				C9A47C652E44A3E200297B0C /* Sources */,
 				C9A47C662E44A3E200297B0C /* Frameworks */,
 				C9A47C672E44A3E200297B0C /* Resources */,
+				81FD70D7BCA916E074834632 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -139,8 +153,6 @@
 			);
 			name = CommunityCapital;
 			packageProductDependencies = (
-				C9A47C962E44A6C900297B0C /* Stripe */,
-				C9A47C982E44A6C900297B0C /* StripePaymentSheet */,
 				C9A47C9B2E44A6F000297B0C /* ComposableArchitecture */,
 			);
 			productName = CommunityCapital;
@@ -151,9 +163,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9A47C8D2E44A3E800297B0C /* Build configuration list for PBXNativeTarget "CommunityCapitalTests" */;
 			buildPhases = (
+				EAEBAC0D4A7FDA28332D7C54 /* [CP] Check Pods Manifest.lock */,
 				C9A47C722E44A3E800297B0C /* Sources */,
 				C9A47C732E44A3E800297B0C /* Frameworks */,
 				C9A47C742E44A3E800297B0C /* Resources */,
+				73B8DFE3CE92E75134FE62C7 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -161,8 +175,6 @@
 				C9A47C782E44A3E800297B0C /* PBXTargetDependency */,
 			);
 			name = CommunityCapitalTests;
-			packageProductDependencies = (
-			);
 			productName = CommunityCapitalTests;
 			productReference = C9A47C762E44A3E800297B0C /* CommunityCapitalTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -181,8 +193,6 @@
 				C9A47C822E44A3E800297B0C /* PBXTargetDependency */,
 			);
 			name = CommunityCapitalUITests;
-			packageProductDependencies = (
-			);
 			productName = CommunityCapitalUITests;
 			productReference = C9A47C802E44A3E800297B0C /* CommunityCapitalUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -220,7 +230,6 @@
 			mainGroup = C9A47C602E44A3E200297B0C;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				C9A47C952E44A6C800297B0C /* XCRemoteSwiftPackageReference "stripe-ios" */,
 				C9A47C9A2E44A6F000297B0C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -258,6 +267,95 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		73B8DFE3CE92E75134FE62C7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CommunityCapitalTests/Pods-CommunityCapitalTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CommunityCapitalTests/Pods-CommunityCapitalTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CommunityCapitalTests/Pods-CommunityCapitalTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		81FD70D7BCA916E074834632 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CommunityCapital/Pods-CommunityCapital-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-CommunityCapital/Pods-CommunityCapital-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-CommunityCapital/Pods-CommunityCapital-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EA105A129BD00E343CF883DA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-CommunityCapital-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EAEBAC0D4A7FDA28332D7C54 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-CommunityCapitalTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C9A47C652E44A3E200297B0C /* Sources */ = {
@@ -334,7 +432,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -397,7 +495,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -418,13 +516,16 @@
 		};
 		C9A47C8B2E44A3E800297B0C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4670EA1AA0A29EFBAC2D48A9 /* Pods-CommunityCapital.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CommunityCapital/Resources/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Community Capital needs camera access to scan receipts";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Authenticate payments securely with Face ID";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Community Capital needs photo access to select receipt images";
@@ -433,6 +534,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -448,13 +550,16 @@
 		};
 		C9A47C8C2E44A3E800297B0C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 25BEA8C215AB7C6957C6A85E /* Pods-CommunityCapital.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CommunityCapital/Resources/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Community Capital needs camera access to scan receipts";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Authenticate payments securely with Face ID";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Community Capital needs photo access to select receipt images";
@@ -463,6 +568,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -478,12 +584,13 @@
 		};
 		C9A47C8E2E44A3E800297B0C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E759C45A898D585E7642FA08 /* Pods-CommunityCapitalTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattwiller.CommunityCapitalTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -496,12 +603,13 @@
 		};
 		C9A47C8F2E44A3E800297B0C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC467E445EC014EAF27A5227 /* Pods-CommunityCapitalTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattwiller.CommunityCapitalTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -518,6 +626,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattwiller.CommunityCapitalUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -534,6 +643,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mattwiller.CommunityCapitalUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -586,14 +696,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		C9A47C952E44A6C800297B0C /* XCRemoteSwiftPackageReference "stripe-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/stripe/stripe-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 24.19.0;
-			};
-		};
 		C9A47C9A2E44A6F000297B0C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
@@ -605,16 +707,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C9A47C962E44A6C900297B0C /* Stripe */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9A47C952E44A6C800297B0C /* XCRemoteSwiftPackageReference "stripe-ios" */;
-			productName = Stripe;
-		};
-		C9A47C982E44A6C900297B0C /* StripePaymentSheet */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9A47C952E44A6C800297B0C /* XCRemoteSwiftPackageReference "stripe-ios" */;
-			productName = StripePaymentSheet;
-		};
 		C9A47C9B2E44A6F000297B0C /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C9A47C9A2E44A6F000297B0C /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;

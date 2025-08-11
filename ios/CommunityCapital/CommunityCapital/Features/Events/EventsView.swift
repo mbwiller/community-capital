@@ -1,10 +1,4 @@
-//
-//  EventsView.swift
-//  CommunityCapital
-//
-//  Created by Matt on 8/7/25.
-//
-
+// EventsView.swift
 import SwiftUI
 import ComposableArchitecture
 
@@ -13,40 +7,107 @@ struct EventsView: View {
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
-            NavigationView {
-                ScrollView {
-                    VStack(spacing: 20) {
-                        Text("Events")
-                            .font(.system(size: 32, weight: .bold))
-                            .foregroundColor(CCDesign.textPrimary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 20)
-                            .padding(.top, 20)
-                        
-                        if viewStore.activeEvents.isEmpty {
-                            VStack(spacing: 16) {
-                                Image(systemName: "calendar.badge.exclamationmark")
-                                    .font(.system(size: 60))
-                                    .foregroundColor(CCDesign.textTertiary)
-                                
-                                Text("No active events")
-                                    .font(.system(size: 18))
-                                    .foregroundColor(CCDesign.textSecondary)
-                            }
-                            .padding(.top, 100)
-                        } else {
-                            ForEach(viewStore.activeEvents) { event in
-                                EventRow(event: event)
-                                    .padding(.horizontal, 20)
-                            }
-                        }
-                    }
-                    .padding(.bottom, 100)
+            VStack {
+                // Segment Control
+                Picker("Events", selection: viewStore.binding(
+                    get: \.selectedSegment,
+                    send: EventsReducer.Action.setSelectedSegment
+                )) {
+                    Text("Active").tag(0)
+                    Text("Completed").tag(1)
                 }
-                .navigationBarHidden(true)
+                .pickerStyle(SegmentedPickerStyle())
+                .padding()
+                
+                if viewStore.selectedSegment == 0 {
+                    ActiveEventsList(events: viewStore.activeEvents)
+                } else {
+                    CompletedEventsList(events: viewStore.completedEvents)
+                }
             }
-            .onAppear {
-                viewStore.send(.loadEvents)
+            .navigationTitle("Events")
+        }
+    }
+}
+
+struct EventsReducer: Reducer {
+    struct State: Equatable {
+        var selectedSegment = 0
+        var activeEvents: [BillEvent] = []
+        var completedEvents: [BillEvent] = []
+    }
+    
+    @CasePathable
+    enum Action: Equatable {
+        case setSelectedSegment(Int)
+        case loadEvents
+        case eventsLoadedSuccess([BillEvent], [BillEvent])  // active, completed
+        case eventsLoadedFailure(APIError)
+    }
+    
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case let .setSelectedSegment(segment):
+                state.selectedSegment = segment
+                return .none
+                
+            case .loadEvents:
+                return .run { send in
+                    do {
+                        let events = try await APIClient.shared.fetchRecentEvents()
+                        let activeEvents = events.filter { $0.status != .completed && $0.status != .failed }
+                        let completedEvents = events.filter { $0.status == .completed || $0.status == .failed }
+                        await send(.eventsLoadedSuccess(activeEvents, completedEvents))
+                    } catch {
+                        await send(.eventsLoadedFailure(error as? APIError ?? .serverError(error.localizedDescription)))
+                    }
+                }
+                
+            case let .eventsLoadedSuccess(active, completed):
+                state.activeEvents = active
+                state.completedEvents = completed
+                return .none
+                
+            case .eventsLoadedFailure:
+                // Handle error if needed
+                return .none
+            }
+        }
+    }
+}
+
+struct ActiveEventsList: View {
+    let events: [BillEvent]
+    
+    var body: some View {
+        if events.isEmpty {
+            EmptyStateView(
+                icon: "clock",
+                title: "No Active Events",
+                message: "Start a new split or join an existing event"
+            )
+        } else {
+            List(events) { event in
+                EventRow(event: event)
+            }
+        }
+    }
+}
+
+struct CompletedEventsList: View {
+    let events: [BillEvent]
+    
+    var body: some View {
+        if events.isEmpty {
+            EmptyStateView(
+                icon: "checkmark.circle",
+                title: "No Completed Events",
+                message: "Your completed bill splits will appear here"
+            )
+        } else {
+            List(events) { event in
+                EventRow(event: event)
             }
         }
     }
@@ -56,63 +117,86 @@ struct EventRow: View {
     let event: BillEvent
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(event.eventName)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(CCDesign.textPrimary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(event.eventName)
+                        .font(.headline)
+                    
+                    Text(event.restaurantName)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
                 
                 Spacer()
                 
                 StatusBadge(status: event.status)
             }
             
-            Text(event.restaurantName)
-                .font(.system(size: 14))
-                .foregroundColor(CCDesign.textSecondary)
-            
             HStack {
                 Label("\(event.participants.count) people", systemImage: "person.2.fill")
-                    .font(.system(size: 12))
-                    .foregroundColor(CCDesign.textSecondary)
+                    .font(.caption)
                 
                 Spacer()
                 
-                Text(String(format: "$%.2f", event.totalAmount))
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    .foregroundColor(CCDesign.textPrimary)
+                Text("$\(event.totalAmount, specifier: "%.2f")")
+                    .font(.headline)
+                    .foregroundColor(.green)
             }
         }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(16)
-        .shadow(color: CCDesign.cardShadow, radius: 4, x: 0, y: 2)
+        .padding(.vertical, 8)
     }
 }
 
 struct StatusBadge: View {
     let status: BillEvent.EventStatus
     
-    var statusConfig: (text: String, color: Color) {
+    var color: Color {
         switch status {
-        case .completed: return ("Settled", CCDesign.success)
-        case .paymentPending: return ("Pending", CCDesign.warning)
-        case .itemsClaimed: return ("Splitting", CCDesign.info)
-        case .awaitingParticipants: return ("Waiting", CCDesign.textSecondary)
-        case .draft: return ("Draft", CCDesign.textTertiary)
-        case .failed: return ("Failed", CCDesign.error)
+        case .draft: return .gray
+        case .awaitingParticipants: return .orange
+        case .itemsClaimed: return .blue
+        case .paymentPending: return .yellow
+        case .completed: return .green
+        case .failed: return .red
         }
     }
     
     var body: some View {
-        Text(statusConfig.text)
-            .font(.system(size: 11, weight: .medium))
-            .foregroundColor(statusConfig.color)
+        Text(status.rawValue.capitalized)
+            .font(.caption2)
+            .fontWeight(.medium)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(statusConfig.color.opacity(0.1))
-            )
+            .background(color.opacity(0.2))
+            .foregroundColor(color)
+            .cornerRadius(6)
+    }
+}
+
+struct EmptyStateView: View {
+    let icon: String
+    let title: String
+    let message: String
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: icon)
+                .font(.system(size: 60))
+                .foregroundColor(.gray)
+            
+            VStack(spacing: 8) {
+                Text(title)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                
+                Text(message)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding()
+        .frame(maxHeight: .infinity)
     }
 }

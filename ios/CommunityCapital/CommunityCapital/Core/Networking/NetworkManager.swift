@@ -1,13 +1,7 @@
-//
-//  NetworkManager.swift
-//  CommunityCapital
-//
-//  Created by Matt on 8/7/25.
-//
-
 // NetworkManager.swift
 import Foundation
 import Combine
+import UIKit  // Add this import for UIImage
 
 // MARK: - Enhanced Network Manager with Retry Logic
 final class NetworkManager: ObservableObject {
@@ -34,8 +28,8 @@ final class NetworkManager: ObservableObject {
         config.timeoutIntervalForResource = 60
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
         config.urlCache = URLCache(
-            memoryCapacity: 10 * 1024 * 1024,  // 10 MB
-            diskCapacity: 50 * 1024 * 1024,     // 50 MB
+            memoryCapacity: 10 * 1024 * 1024, // 10 MB
+            diskCapacity: 50 * 1024 * 1024, // 50 MB
             diskPath: "community_capital_cache"
         )
         
@@ -150,7 +144,11 @@ final class NetworkManager: ObservableObject {
         body.append("--\(boundary)--\r\n".data(using: .utf8)!)
         request.httpBody = body
         
-        return try await request(.uploadReceipt(eventId: eventId))
+        let (data, response) = try await session.data(for: request)
+        try validateResponse(response, data: data)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(ReceiptUploadResponse.self, from: data)
     }
     
     // MARK: - WebSocket for Real-time Updates
@@ -182,7 +180,7 @@ final class NetworkManager: ObservableObject {
                     receive() // Continue receiving
                     
                 case .failure(let error):
-                    logError(error)
+                    self.logError(error)
                     // Attempt reconnection after delay
                     DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                         self.connectWebSocket()
@@ -221,7 +219,7 @@ final class NetworkManager: ObservableObject {
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("iOS/\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")",
+        request.setValue("iOS/\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")", 
                         forHTTPHeaderField: "User-Agent")
         
         // Add body if needed

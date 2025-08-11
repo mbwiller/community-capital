@@ -143,63 +143,162 @@ struct PaymentSourceSelectionView: View {
     }
 }
 
-// MARK: - Plaid Link View (Mock for now)
+// MARK: - Plaid Link View (Enhanced)
 struct PlaidLinkView: View {
     let store: StoreOf<PaymentReducer>
     @State private var isLinking = false
+    @State private var showingPlaidLink = false
+    @State private var selectedBank: BankInstitution?
+    
     var body: some View {
-        VStack(spacing: 32) {
-            // Plaid logo placeholder
-            Image(systemName: "building.columns.fill")
-                .font(.system(size: 60))
-                .foregroundColor(CCDesign.primaryGreen)
-            
-            Text("Connect Your Bank")
-                .font(.system(size: 24, weight: .bold))
-                .foregroundColor(CCDesign.textPrimary)
-            
-            Text("Securely link your bank account with Plaid")
-                .font(.system(size: 16))
-                .foregroundColor(CCDesign.textSecondary)
-                .multilineTextAlignment(.center)
-            
-            // Security badges
-            HStack(spacing: 20) {
-                SecurityBadge(icon: "lock.shield.fill", text: "Bank-level\nEncryption")
-                SecurityBadge(icon: "eye.slash.fill", text: "Private &\nSecure")
-                SecurityBadge(icon: "checkmark.shield.fill", text: "Verified by\nPlaid")
-            }
-            
-            Spacer()
-            
-            if isLinking {
-                VStack(spacing: 16) {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: CCDesign.primaryGreen))
+        WithViewStore(self.store, observe: { $0 }) { viewStore in
+            ScrollView {
+                VStack(spacing: 32) {
+                    // Header
+                    VStack(spacing: 16) {
+                        ZStack {
+                            Circle()
+                                .fill(CCDesign.primaryGradient)
+                                .frame(width: 80, height: 80)
+                            
+                            Image(systemName: "building.columns.fill")
+                                .font(.system(size: 32, weight: .medium))
+                                .foregroundColor(.white)
+                        }
+                        
+                        VStack(spacing: 8) {
+                            Text("Connect Your Bank")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(CCDesign.textPrimary)
+                            
+                            Text("Securely link your bank account with Plaid")
+                                .font(.system(size: 16))
+                                .foregroundColor(CCDesign.textSecondary)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
                     
-                    Text("Connecting to your bank...")
-                        .font(.system(size: 14))
-                        .foregroundColor(CCDesign.textSecondary)
-                }
-            } else {
-                PrimaryActionButton(
-                    title: "Connect Bank Account",
-                    icon: "link"
-                ) {
-                    simulatePlaidLink()
+                    // Security badges
+                    VStack(spacing: 16) {
+                        Text("Bank-Level Security")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(CCDesign.textPrimary)
+                        
+                        HStack(spacing: 20) {
+                            SecurityBadge(icon: "lock.shield.fill", text: "Bank-level\nEncryption")
+                            SecurityBadge(icon: "eye.slash.fill", text: "Private &\nSecure")
+                            SecurityBadge(icon: "checkmark.shield.fill", text: "Verified by\nPlaid")
+                        }
+                    }
+                    
+                    // Popular banks
+                    VStack(spacing: 16) {
+                        Text("Popular Banks")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(CCDesign.textPrimary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
+                            ForEach(popularBanks, id: \.name) { bank in
+                                BankOptionCard(
+                                    bank: bank,
+                                    isSelected: selectedBank?.name == bank.name
+                                ) {
+                                    selectedBank = bank
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Manual bank selection
+                    VStack(spacing: 12) {
+                        Button(action: {
+                            showingPlaidLink = true
+                        }) {
+                            HStack {
+                                Image(systemName: "magnifyingglass")
+                                    .font(.system(size: 16))
+                                
+                                Text("Search for your bank")
+                                    .font(.system(size: 16, weight: .medium))
+                                
+                                Spacer()
+                                
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 14))
+                            }
+                            .foregroundColor(CCDesign.textPrimary)
+                            .padding(.vertical, 16)
+                            .padding(.horizontal, 20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.white)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(CCDesign.primaryGreen.opacity(0.3), lineWidth: 1)
+                                    )
+                            )
+                        }
+                        
+                        Text("Can't find your bank? Search for it above")
+                            .font(.system(size: 12))
+                            .foregroundColor(CCDesign.textSecondary)
+                    }
+                    
+                    Spacer(minLength: 100)
                 }
                 .padding(.horizontal, 20)
             }
-            
-            Text("Your login details are never stored")
-                .font(.system(size: 12))
-                .foregroundColor(CCDesign.textSecondary)
-                .padding(.bottom, 20)
+            .overlay(
+                VStack {
+                    Spacer()
+                    
+                    VStack(spacing: 16) {
+                        if isLinking {
+                            VStack(spacing: 12) {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: CCDesign.primaryGreen))
+                                
+                                Text("Connecting to your bank...")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(CCDesign.textSecondary)
+                            }
+                            .padding(.vertical, 20)
+                        } else {
+                            PrimaryActionButton(
+                                title: selectedBank != nil ? "Connect \(selectedBank!.name)" : "Connect Bank Account",
+                                icon: "link",
+                                isEnabled: selectedBank != nil
+                            ) {
+                                initiatePlaidLink()
+                            }
+                        }
+                        
+                        Text("Your login details are never stored")
+                            .font(.system(size: 12))
+                            .foregroundColor(CCDesign.textSecondary)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 20)
+                    .background(
+                        Rectangle()
+                            .fill(Color.white)
+                            .shadow(color: CCDesign.cardShadow, radius: 20, x: 0, y: -5)
+                    )
+                }
+            )
+            .sheet(isPresented: $showingPlaidLink) {
+                BankSearchView { bank in
+                    selectedBank = bank
+                    showingPlaidLink = false
+                }
+            }
         }
-        .padding(.horizontal, 20)
     }
     
-    func simulatePlaidLink() {
+    private func initiatePlaidLink() {
+        guard let bank = selectedBank else { return }
+        
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             isLinking = true
             
@@ -210,13 +309,183 @@ struct PlaidLinkView: View {
                     id: UUID().uuidString,
                     type: .bankAccount,
                     last4: "4321",
-                    bankName: "Chase",
+                    bankName: bank.name,
                     accountType: "Checking",
                     isDefault: viewStore.linkedAccounts.isEmpty
                 )
                 
                 viewStore.send(.bankLinked(mockAccount))
                 isLinking = false
+            }
+        }
+    }
+    
+    private let popularBanks = [
+        BankInstitution(name: "Chase", logo: "chase", color: Color.blue),
+        BankInstitution(name: "Bank of America", logo: "boa", color: Color.red),
+        BankInstitution(name: "Wells Fargo", logo: "wells", color: Color.red),
+        BankInstitution(name: "Citibank", logo: "citi", color: Color.blue),
+        BankInstitution(name: "Capital One", logo: "capitalone", color: Color.orange),
+        BankInstitution(name: "American Express", logo: "amex", color: Color.blue)
+    ]
+}
+
+// MARK: - Bank Institution Model
+struct BankInstitution: Equatable {
+    let name: String
+    let logo: String
+    let color: Color
+}
+
+// MARK: - Bank Option Card
+struct BankOptionCard: View {
+    let bank: BankInstitution
+    let isSelected: Bool
+    let onSelect: () -> Void
+    
+    var body: some View {
+        Button(action: onSelect) {
+            HStack {
+                // Bank logo placeholder
+                ZStack {
+                    Circle()
+                        .fill(bank.color.opacity(0.1))
+                        .frame(width: 40, height: 40)
+                    
+                    Text(bank.name.prefix(2).uppercased())
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(bank.color)
+                }
+                
+                Text(bank.name)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(CCDesign.textPrimary)
+                
+                Spacer()
+                
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(CCDesign.primaryGreen)
+                }
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? CCDesign.lightGreen : Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(isSelected ? CCDesign.primaryGreen : CCDesign.primaryGreen.opacity(0.2), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Bank Search View
+struct BankSearchView: View {
+    @Environment(.dismiss) var dismiss
+    @State private var searchText = ""
+    let onBankSelected: (BankInstitution) -> Void
+    
+    private let allBanks = [
+        BankInstitution(name: "Chase", logo: "chase", color: Color.blue),
+        BankInstitution(name: "Bank of America", logo: "boa", color: Color.red),
+        BankInstitution(name: "Wells Fargo", logo: "wells", color: Color.red),
+        BankInstitution(name: "Citibank", logo: "citi", color: Color.blue),
+        BankInstitution(name: "Capital One", logo: "capitalone", color: Color.orange),
+        BankInstitution(name: "American Express", logo: "amex", color: Color.blue),
+        BankInstitution(name: "US Bank", logo: "usbank", color: Color.blue),
+        BankInstitution(name: "PNC Bank", logo: "pnc", color: Color.blue),
+        BankInstitution(name: "TD Bank", logo: "td", color: Color.green),
+        BankInstitution(name: "BB&T", logo: "bbt", color: Color.blue),
+        BankInstitution(name: "SunTrust", logo: "suntrust", color: Color.blue),
+        BankInstitution(name: "Regions Bank", logo: "regions", color: Color.blue)
+    ]
+    
+    private var filteredBanks: [BankInstitution] {
+        if searchText.isEmpty {
+            return allBanks
+        } else {
+            return allBanks.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 0) {
+                // Search bar
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(CCDesign.textSecondary)
+                    
+                    TextField("Search for your bank", text: $searchText)
+                        .font(.system(size: 17))
+                    
+                    if !searchText.isEmpty {
+                        Button(action: { searchText = "" }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(CCDesign.textSecondary)
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.white)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(CCDesign.primaryGreen.opacity(0.3), lineWidth: 1)
+                        )
+                )
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                
+                // Banks list
+                List(filteredBanks, id: \.name) { bank in
+                    Button(action: {
+                        onBankSelected(bank)
+                    }) {
+                        HStack {
+                            // Bank logo placeholder
+                            ZStack {
+                                Circle()
+                                    .fill(bank.color.opacity(0.1))
+                                    .frame(width: 40, height: 40)
+                                
+                                Text(bank.name.prefix(2).uppercased())
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundColor(bank.color)
+                            }
+                            
+                            Text(bank.name)
+                                .font(.system(size: 16))
+                                .foregroundColor(CCDesign.textPrimary)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14))
+                                .foregroundColor(CCDesign.textTertiary)
+                        }
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                .listStyle(PlainListStyle())
+            }
+            .navigationTitle("Select Bank")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(CCDesign.primaryGreen)
+                }
             }
         }
     }

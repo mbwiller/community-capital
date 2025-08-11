@@ -1174,49 +1174,201 @@ struct ProfileView: View {
 struct JoinEventView: View {
     let store: StoreOf<JoinEventReducer>
     @Environment(.dismiss) var dismiss
+    
     var body: some View {
-        NavigationView {
-            VStack(spacing: 24) {
-                Text("Join Event")
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(CCDesign.textPrimary)
-                
-                // Event code input
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Event Code")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(CCDesign.textSecondary)
+        WithViewStore(self.store, observe: { $0 }) { viewStore in
+            NavigationView {
+                ZStack {
+                    CCDesign.backgroundPrimary.ignoresSafeArea()
                     
-                    TextField("Enter 6-digit code", text: .constant(""))
-                        .font(.system(size: 17, weight: .regular, design: .rounded))
-                        .padding(.horizontal, 16)
-                        .frame(height: 52)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.white)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(CCDesign.primaryGreen.opacity(0.3), lineWidth: 1)
+                    VStack(spacing: 32) {
+                        // Header
+                        VStack(spacing: 16) {
+                            ZStack {
+                                Circle()
+                                    .fill(CCDesign.primaryGradient)
+                                    .frame(width: 80, height: 80)
+                                
+                                Image(systemName: "qrcode.viewfinder")
+                                    .font(.system(size: 32, weight: .medium))
+                                    .foregroundColor(.white)
+                            }
+                            
+                            VStack(spacing: 8) {
+                                Text("Join Event")
+                                    .font(.system(size: 28, weight: .bold))
+                                    .foregroundColor(CCDesign.textPrimary)
+                                
+                                Text("Enter the 6-digit event code")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(CCDesign.textSecondary)
+                                    .multilineTextAlignment(.center)
+                            }
+                        }
+                        
+                        // Code Input
+                        VStack(spacing: 20) {
+                            HStack(spacing: 12) {
+                                ForEach(0..<6, id: \.self) { index in
+                                    CodeDigitView(
+                                        digit: getDigit(at: index, from: viewStore.code),
+                                        isActive: viewStore.code.count == index,
+                                        isError: viewStore.error != nil
+                                    )
+                                }
+                            }
+                            
+                            // Hidden text field for keyboard input
+                            TextField("", text: viewStore.binding(
+                                get: \.code,
+                                send: JoinEventReducer.Action.setCode
+                            ))
+                            .keyboardType(.numberPad)
+                            .textContentType(.oneTimeCode)
+                            .opacity(0)
+                            .frame(height: 1)
+                            .onChange(of: viewStore.code) { newValue in
+                                // Limit to 6 digits
+                                if newValue.count > 6 {
+                                    viewStore.send(.setCode(String(newValue.prefix(6))))
+                                }
+                            }
+                        }
+                        
+                        // Error message
+                        if let error = viewStore.error {
+                            HStack {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundColor(CCDesign.error)
+                                
+                                Text(error)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(CCDesign.error)
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(CCDesign.error.opacity(0.1))
+                            )
+                        }
+                        
+                        Spacer()
+                        
+                        // Join button
+                        PrimaryActionButton(
+                            title: "Join Event",
+                            icon: "person.badge.plus.fill",
+                            isLoading: viewStore.isLoading,
+                            isEnabled: viewStore.code.count == 6 && viewStore.error == nil
+                        ) {
+                            viewStore.send(.joinEvent)
+                        }
+                        .padding(.horizontal, 20)
+                        
+                        // Alternative options
+                        VStack(spacing: 16) {
+                            Button(action: {
+                                // TODO: Implement QR code scanning
+                            }) {
+                                HStack {
+                                    Image(systemName: "qrcode.viewfinder")
+                                        .font(.system(size: 18))
+                                    
+                                    Text("Scan QR Code")
+                                        .font(.system(size: 16, weight: .medium))
+                                }
+                                .foregroundColor(CCDesign.primaryGreen)
+                                .padding(.vertical, 12)
+                                .padding(.horizontal, 20)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(CCDesign.primaryGreen, lineWidth: 1.5)
                                 )
-                        )
-                }
-                
-                PrimaryActionButton(title: "Join Event") {
-                    dismiss()
-                }
-                
-                Spacer()
-            }
-            .padding(20)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+                            }
+                            
+                            Button(action: {
+                                // TODO: Implement link sharing
+                            }) {
+                                HStack {
+                                    Image(systemName: "link")
+                                        .font(.system(size: 16))
+                                    
+                                    Text("Join via Link")
+                                        .font(.system(size: 14))
+                                }
+                                .foregroundColor(CCDesign.textSecondary)
+                            }
+                        }
+                        .padding(.bottom, 20)
                     }
-                    .foregroundColor(CCDesign.primaryGreen)
+                    .padding(.horizontal, 20)
+                }
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("Cancel") {
+                            dismiss()
+                        }
+                        .foregroundColor(CCDesign.primaryGreen)
+                    }
+                }
+                .onAppear {
+                    // Auto-focus the text field
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        // This would focus the hidden text field
+                    }
                 }
             }
+        }
+    }
+    
+    private func getDigit(at index: Int, from code: String) -> String {
+        guard index < code.count else { return "" }
+        let stringIndex = code.index(code.startIndex, offsetBy: index)
+        return String(code[stringIndex])
+    }
+}
+
+// MARK: - Code Digit View
+struct CodeDigitView: View {
+    let digit: String
+    let isActive: Bool
+    let isError: Bool
+    
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(borderColor, lineWidth: 2)
+                )
+                .frame(width: 50, height: 60)
+            
+            if digit.isEmpty {
+                if isActive {
+                    Rectangle()
+                        .fill(CCDesign.primaryGreen)
+                        .frame(width: 2, height: 24)
+                        .opacity(0.8)
+                        .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: isActive)
+                }
+            } else {
+                Text(digit)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundColor(CCDesign.textPrimary)
+            }
+        }
+    }
+    
+    private var borderColor: Color {
+        if isError {
+            return CCDesign.error
+        } else if isActive {
+            return CCDesign.primaryGreen
+        } else {
+            return CCDesign.primaryGreen.opacity(0.3)
         }
     }
 }
