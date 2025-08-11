@@ -103,5 +103,7 @@ npm install
 
 Proprietary - All rights reserved
 
+Developer: Matthew Willer
+
 ---
 Last Updated: August 9, 2025
